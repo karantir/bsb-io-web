@@ -2,29 +2,16 @@
  - official BSB site
  - Habrahabr articles series
 
-
-# Development environment
- - Vagrant
- - Virtualbox
-
-## Server side
+# Customizing API
  - https://github.com/ASMfreaK/bsb_io
  - Tornado web framwework docs
  - Unit testing tornado
 
-## Client side
- - Bower package manager
- - Gulp build system
- - RactiveJS MVC framework
- - RequireJS AMD system
- - Jasmine testing
- - [todo] choose SVG framework
+# Development
+ - Virtualbox (any x86 based linux, because of python)
+ - Vagrant
 
-## Development operations
- - [todo] Ansible
- - [todo] CI
-
-# Manual configuration
+# Configuring BSB
 
 ## Enabling WiFi client
  - OpenWRT WiFi config docs
@@ -46,5 +33,5 @@
 ## Flushing BSB GPIO bindings for python
  - BSB GPIO datasheet PDF
 
-## Flushing server and client software
+## Flushing API server
  - scp to `www` folder
