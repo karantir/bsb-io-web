@@ -19,9 +19,7 @@ require([
 
 function($, SockJS) {
 
-    console.log(SockJS)
-
-    var sock = new SockJS('http://localhost:9494');
+    var sock = new SockJS('http://localhost:8000/api');
     sock.onopen = function() {
         console.log('open');
         sock.send('test');

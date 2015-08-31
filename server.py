@@ -1,40 +1,53 @@
+# -*- coding: utf-8 -*-
+"""
+    sockjs-tornado benchmarking server. Works as a simple chat server
+    without HTML frontend and listens on port 8080 by default.
+"""
 import sys
-import threading
-import SocketServer
+
+from tornado import web, ioloop
+
+from sockjs.tornado import SockJSRouter, SockJSConnection
 
 
-class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
+class EchoConnection(SockJSConnection):
+    """Echo connection implementation"""
+    clients = set()
 
-    def handle(self):
-        # self.request is the TCP socket connected to the client
-        self.data = self.request.recv(1024).strip()
-        thread = threading.currentThread()
+    def on_open(self, info):
+        # When new client comes in, will add it to the clients list
+        self.clients.add(self)
 
-        print "{0} {1} wrote: {2}".format(
-            self.client_address[0],
-            thread.name,
-            self.data)
+    def on_message(self, msg):
+        # For every incoming message, broadcast it to all clients
+        self.broadcast(self.clients, msg.upper())
 
-        # just send back the same data, but upper-cased
-        self.request.sendall(self.data.upper())
+    def on_close(self):
+        # If client disconnects, remove him from the clients list
+        self.clients.remove(self)
 
+    @classmethod
+    def dump_stats(cls):
+        # Print current client count
+        print 'Clients: %d' % (len(cls.clients))
 
-class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    pass
+if __name__ == '__main__':
+    options = dict()
 
+    if len(sys.argv) > 1:
+        options['immediate_flush'] = False
 
-if __name__ == "__main__":
+    # 1. Create SockJSRouter
+    EchoRouter = SockJSRouter(EchoConnection, '/', options)
 
-    # Port 0 means to select an arbitrary unused port
-    # Host "" means accepting connections from anywhere
-    HOST, PORT = "", 9494
+    # 2. Create Tornado web.Application
+    app = web.Application(EchoRouter.urls)
 
-    try:
-        server = ThreadedTCPServer((HOST, PORT), ThreadedTCPRequestHandler)
-        print "Listening on {0}:{1}\nPress Ctrl-C to exit\n".format(*server.server_address)
-        server.serve_forever()
+    # 3. Make application listen on port 8080
+    app.listen(8080)
 
-    except KeyboardInterrupt:
-        print "\nBye"
-        server.shutdown()
-        sys.exit()
+    # 4. Every 1 second dump current client count
+    ioloop.PeriodicCallback(EchoConnection.dump_stats, 1000).start()
+
+    # 5. Start IOLoop
+    ioloop.IOLoop.instance().start()
