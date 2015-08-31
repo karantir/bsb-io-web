@@ -17,6 +17,7 @@ class EchoConnection(SockJSConnection):
     def on_open(self, info):
         # When new client comes in, will add it to the clients list
         self.clients.add(self)
+        print info
 
     def on_message(self, msg):
         # For every incoming message, broadcast it to all clients
