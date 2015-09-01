@@ -2,16 +2,19 @@
  - official BSB site
  - Habrahabr articles series
 
+
 # Customizing API
  - https://github.com/ASMfreaK/bsb_io
  - Tornado web framwework docs
  - Unit testing tornado
 
+
 # Development
  - Virtualbox (any x86 based linux, because of python)
  - Vagrant
 
-# Configuring BSB
+
+# Deployment
 
 ## Enabling WiFi client
  - OpenWRT WiFi config docs
