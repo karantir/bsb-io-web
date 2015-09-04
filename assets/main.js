@@ -18,10 +18,10 @@ require([
 
 function($, SockJS) {
 
-    var sock = new SockJS('http://localhost:8000/api');
+    sock = new SockJS('http://192.168.0.254/api');
     sock.onopen = function() {
         console.log('open');
-        sock.send('test');
+        sock.send('{}');
     };
     sock.onmessage = function(e) {
         console.log('message', e.data);

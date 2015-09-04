@@ -4,10 +4,13 @@
     without HTML frontend and listens on port 8080 by default.
 """
 import sys
+import json
 
 from tornado import web, ioloop
 
 from sockjs.tornado import SockJSRouter, SockJSConnection
+
+from bsb_io import *
 
 
 class EchoConnection(SockJSConnection):
@@ -21,7 +24,17 @@ class EchoConnection(SockJSConnection):
 
     def on_message(self, msg):
         # For every incoming message, broadcast it to all clients
-        self.broadcast(self.clients, msg.upper())
+        msg = json.loads(msg)
+        if 'pin' in msg and 'val' in msg:
+
+            i = int(msg['pin'])
+            v = ON if int(msg['val']) else OFF
+
+            p = Pin(i)
+            p.direction = OUTPUT
+            p.value = v
+
+        self.broadcast(self.clients, json.dumps(msg))
 
     def on_close(self):
         # If client disconnects, remove him from the clients list
